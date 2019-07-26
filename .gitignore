@@ -1,0 +1,5 @@
+#IDE specifics
+.idea
+
+#Composer specifics
+/vendor
