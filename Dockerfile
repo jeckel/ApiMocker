@@ -6,7 +6,7 @@ RUN composer install --no-dev
 
 FROM php:7.2-cli-alpine
 
-ENV CONFIG_DIR='/app/config'
+ENV CONFIG_FILE='/app/config/config.php'
 ENV LOG_FILE='/app/config/log.php'
 ENV PORT=8080
 

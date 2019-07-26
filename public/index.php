@@ -9,8 +9,7 @@ use App\Router;
 
 require_once '../vendor/autoload.php';
 
-$config_dir = getenv('CONFIG_DIR');
-$config = include $config_dir . '/config.php';
+$config = include getenv('CONFIG_FILE');
 
 $router = new Router();
 $router->init($config)->dispatch();
