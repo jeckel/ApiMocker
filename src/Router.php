@@ -112,9 +112,11 @@ class Router
 
     protected function logCall(Route $route): void
     {
-        $logs = [];
         if (file_exists($this->logFile)) {
             $logs = include $this->logFile;
+        }
+        if (!isset($logs) || !is_array($logs)) {
+            $logs = [];
         }
         $logs[] = [
             'uri' => $_SERVER['REQUEST_URI'],
