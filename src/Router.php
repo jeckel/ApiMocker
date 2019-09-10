@@ -73,8 +73,9 @@ class Router
      */
     protected function findMatchingRoute(): Route
     {
-        $matches = array_filter($this->routes, static function(Route $route) {
-            return ($route->getMethod() === $_SERVER['REQUEST_METHOD']) && ($route->getUri() === $_SERVER['REQUEST_URI']);
+        $matches = array_filter($this->routes, static function (Route $route) {
+            return ($route->getMethod() === $_SERVER['REQUEST_METHOD']) &&
+                ($route->getUri() === $_SERVER['REQUEST_URI']);
         });
         if (count($matches) === 0) {
             throw new RoutingException(sprintf(
@@ -105,9 +106,9 @@ class Router
         http_response_code($code);
         if (is_string($response)) {
             echo $response;
-        } else {
-            echo json_encode($response);
+            return;
         }
+        echo json_encode($response);
     }
 
     protected function logCall(Route $route): void

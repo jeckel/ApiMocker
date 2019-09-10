@@ -5,6 +5,7 @@ declare(strict_types=1);
  * Created at : 26/07/2019
  */
 namespace App\Exception;
+
 use Throwable;
 
 /**

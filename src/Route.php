@@ -6,12 +6,13 @@ declare(strict_types=1);
  */
 
 namespace App;
+
 /**
  * Class Route
  */
 class Route
 {
-    const DEFAULT_RESPONSE_CODE = 200;
+    protected const DEFAULT_RESPONSE_CODE = 200;
 
     /**
      * @var string
