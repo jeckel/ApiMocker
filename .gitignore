@@ -3,3 +3,6 @@
 
 #Composer specifics
 /vendor
+
+#CI/CD
+.phpunit.result.cache
