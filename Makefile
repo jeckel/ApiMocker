@@ -1,6 +1,6 @@
 .PHONY: build up composer phpstan phpcs phpcbf phpmd phpunit test qa grumphp install-gumphp
 
-DOCKER=docker-compose run --rm --no-deps jeckel/php-test:7.3-cli-alpine
+DOCKER=docker-compose run --rm --no-deps php-cli
 
 build:
 	@docker build -t jeckel/php-fake-json-server .
