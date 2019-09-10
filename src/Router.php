@@ -9,6 +9,8 @@ namespace App;
 
 use App\Exception\ExceptionInterface;
 use App\Exception\RoutingException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Router
@@ -35,26 +37,32 @@ class Router
         return $this;
     }
 
-
     /**
-     * @return void
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
      */
-    public function dispatch(): void
-    {
+    public function dispatch(
+        RequestInterface $request,
+        ResponseInterface $response
+    ): ResponseInterface {
+        $method = $request->getMethod();
+        $path = $request->getUri()->getPath();
         try {
-            $route = $this->findMatchingRoute();
+            $route = $this->findMatchingRoute($method, $path);
         } catch (ExceptionInterface $e) {
-            $this->render(
+            $response->getBody()->write(json_encode(
                 [
                     'error_code' => 500,
                     'error_message' => $e->getMessage()
                 ],
-                500
-            );
-            return;
+                JSON_PRETTY_PRINT
+            ));
+            return $response->withStatus(500, $e->getMessage());
         }
         $this->logCall($route);
-        $this->render($route->getResponse(), $route->getResponseCode());
+        $response->getBody()->write($route->getResponse());
+        return $response->withStatus($route->getResponseCode());
     }
 
     /**
@@ -68,28 +76,29 @@ class Router
     }
 
     /**
+     * @param string $method
+     * @param string $path
      * @return Route
-     * @throws RoutingException
      */
-    protected function findMatchingRoute(): Route
+    protected function findMatchingRoute(string $method, string $path): Route
     {
-        $matches = array_filter($this->routes, static function (Route $route) {
-            return ($route->getMethod() === $_SERVER['REQUEST_METHOD']) &&
-                ($route->getUri() === $_SERVER['REQUEST_URI']);
+        $matches = array_filter($this->routes, static function (Route $route) use ($method, $path) {
+            return ($route->getMethod() === $method) &&
+                ($route->getUri() === $path);
         });
         if (count($matches) === 0) {
             throw new RoutingException(sprintf(
                 'No matching route found for %s with method %s',
-                $_SERVER['REQUEST_URI'],
-                $_SERVER['REQUEST_METHOD']
+                $path,
+                $method
             ));
         }
 
         if (count($matches) > 1) {
             throw new RoutingException(sprintf(
-                'Mutliple route definition found for %s with method %s',
-                $_SERVER['REQUEST_URI'],
-                $_SERVER['REQUEST_METHOD']
+                'Multiple route definition found for %s with method %s',
+                $path,
+                $method
             ));
         }
 
