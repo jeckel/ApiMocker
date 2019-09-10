@@ -1,0 +1,10 @@
+version: '3.5'
+
+# Define services
+#
+services:
+  php-cli:
+    image: jeckel/php-test:7.3-cli-alpine
+    volumes:
+      - ./:/app/project
+    working_dir: /app/project
