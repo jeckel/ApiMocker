@@ -5,19 +5,27 @@ declare(strict_types=1);
  * Created at : 26/07/2019
  */
 
+use App\Factory\RouterFactory;
+use DI\Bridge\Slim\Bridge;
+use DI\Container;
+use DI\ContainerBuilder;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Factory\AppFactory;
 
-use App\Router;
+use App\Service\Router;
+use function DI\factory;
+
+if (! defined('PROJECT_ROOT')) {
+    define('PROJECT_ROOT', dirname(__DIR__));
+}
 
 require_once '../vendor/autoload.php';
 
-$config = include getenv('CONFIG_FILE');
-
-$router = new Router();
-
-$app = AppFactory::create();
+$app = Bridge::create(
+    (new ContainerBuilder())
+        ->addDefinitions(PROJECT_ROOT . '/settings/container.php')
+        ->build()
+    );
 
 // Configuration API
 $app->get('fake-api-config', static function(RequestInterface $request, ResponseInterface $response, array $args) {
@@ -27,8 +35,8 @@ $app->get('fake-api-config', static function(RequestInterface $request, Response
 });
 
 // Matching routes
-$app->any('/[{route:.*}]', static function(RequestInterface $request, ResponseInterface $response) use ($config, $router) {
-    return $router->init($config)->dispatch($request, $response);
+$app->any('/[{route:.*}]', static function(RequestInterface $request, ResponseInterface $response, Router $router) {
+    return $router->dispatch($request, $response);
 });
 
 $app->run();

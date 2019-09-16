@@ -5,10 +5,11 @@ declare(strict_types=1);
  * Created at : 26/07/2019
  */
 
-namespace App;
+namespace App\Service;
 
 use App\Exception\ExceptionInterface;
 use App\Exception\RoutingException;
+use App\Route;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
