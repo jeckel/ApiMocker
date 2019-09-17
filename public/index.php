@@ -5,12 +5,9 @@ declare(strict_types=1);
  * Created at : 26/07/2019
  */
 
-use App\Controller\FakeApiController;
-use App\Controller\SetupController;
-use App\Middleware\FakeApiLoggerMiddleware;
 use DI\Bridge\Slim\Bridge;
 use DI\ContainerBuilder;
-use Slim\Routing\RouteCollectorProxy;
+use Slim\Factory\AppFactory;
 
 if (! defined('PROJECT_ROOT')) {
     define('PROJECT_ROOT', dirname(__DIR__));
@@ -18,21 +15,33 @@ if (! defined('PROJECT_ROOT')) {
 
 require_once '../vendor/autoload.php';
 
-$container = (new ContainerBuilder())
-    ->addDefinitions(PROJECT_ROOT . '/settings/container.php')
-    ->build();
+// Instantiate PHP-DI ContainerBuilder
+$containerBuilder = new ContainerBuilder();
+if (false) { // Should be set to true in production
+    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+}
 
+// Set up settings
+$settings = require __DIR__ . '/../config/settings.php';
+$settings($containerBuilder);
+
+$dependencies = require __DIR__ . '/../config/dependencies.php';
+$dependencies($containerBuilder);
+
+// Build PHP-DI Container instance
+$container = $containerBuilder->build();
+
+
+// Instantiate the app
+AppFactory::setContainer($container);
+//$app = AppFactory::create();
 $app = Bridge::create($container);
-$app->addBodyParsingMiddleware();
 
-// Configuration API
-$app->group('/fake-api-config', static function (RouteCollectorProxy $group) {
-    $group->post('/routeMock', [SetupController::class, 'addRouteMock']);
-    $group->delete('/reset', [SetupController::class, 'reset']);
-});
+// Register middleware
+$middleware = require __DIR__ . '/../config/middleware.php';
+$middleware($app);
+// Register routes
+$routes = require __DIR__ . '/../config/routes.php';
+$routes($app);
 
-$app->any('/[{route:.*}]', [FakeApiController::class, 'dispatch'])
-    ->addMiddleware(
-        $container->get(FakeApiLoggerMiddleware::class)
-    );
 $app->run();

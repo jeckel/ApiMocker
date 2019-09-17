@@ -37,12 +37,19 @@ class FakeRouteMapper
         if (isset($data['responseCode'])) {
             $route->setResponseCode(intval($data['responseCode']));
         }
-        if (isset($data['expectedHeaders']) && is_array($data['expectedHeaders'])) {
-            foreach ($data['expectedHeaders'] as $header => $value) {
-                $route->addExpectedHeader($header, $value);
-            }
-        }
+        $this->mapHeaders($data['expectedHeaders'], [$route, 'addExpectedHeader']);
+        $this->mapHeaders($data['responseHeaders'], [$route, 'addResponseHeader']);
         return $route;
+    }
+
+    private function mapHeaders($headers, callable $function)
+    {
+        if ($headers === null || ! is_array($headers)) {
+            return;
+        }
+        foreach ($headers as $header => $value) {
+            $function($header, $value);
+        }
     }
 
     /**
@@ -58,7 +65,8 @@ class FakeRouteMapper
             ->setExpectedBody(json_decode($data['expectedBody']))
             ->setExpectedHeaders(json_decode($data['expectedHeaders'], true))
             ->setResponse(json_decode($data['response']))
-            ->setResponseCode(intval($data['responseCode']));
+            ->setResponseCode(intval($data['responseCode']))
+            ->setResponseHeaders(json_decode($data['responseHeaders'], true));
         return $route;
     }
 }

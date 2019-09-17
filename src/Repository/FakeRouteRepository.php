@@ -45,8 +45,8 @@ class FakeRouteRepository
     {
         $stmt = $this->pdo->prepare(
             'INSERT INTO route 
-            (path, method, expectedBody, expectedHeaders, response, responseCode) 
-            VALUES (:path, :method, :expectedBody, :expectedHeaders, :response, :responseCode)'
+            (path, method, expectedBody, expectedHeaders, response, responseCode, responseHeaders) 
+            VALUES (:path, :method, :expectedBody, :expectedHeaders, :response, :responseCode, :responseHeaders)'
         );
 
         $stmt->execute([
@@ -55,7 +55,8 @@ class FakeRouteRepository
             ':expectedBody' => json_encode($route->getExpectedBody(), JSON_THROW_ON_ERROR),
             ':expectedHeaders' => json_encode($route->getExpectedHeaders(), JSON_THROW_ON_ERROR),
             ':response' => json_encode($route->getResponse(), JSON_THROW_ON_ERROR),
-            ':responseCode' => $route->getResponseCode()
+            ':responseCode' => $route->getResponseCode(),
+            ':responseHeaders' => json_encode($route->getResponseHeaders(), JSON_THROW_ON_ERROR)
         ]);
 
         $route->setId(intval($this->pdo->lastInsertId()));

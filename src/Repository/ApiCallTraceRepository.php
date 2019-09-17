@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\ApiCallTrace;
+use DateTimeImmutable;
 use PDO;
 
 /**
@@ -83,5 +84,27 @@ class ApiCallTraceRepository
             ':received_at' => $trace->getReceivedAt()->format('Y-m-d H:i:s')
         ]);
         return $trace;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll(): array
+    {
+        $stmt = $this->pdo->query('SELECT * FROM api_call_trace');
+        $rows = $stmt->fetchAll();
+
+        $toReturn = [];
+        foreach ($rows as $row) {
+            $toReturn[] = (new ApiCallTrace())
+                ->setApiCallTraceId($row['id'])
+                ->setMatchedRouteId($row['route_id'])
+                ->setPath($row['path'])
+                ->setMethod($row['method'])
+                ->setBody($row['body'])
+                ->setReceivedAt(date_create_immutable_from_format('Y-m-d H:i:s', $row['received_at']));
+        }
+
+        return $toReturn;
     }
 }

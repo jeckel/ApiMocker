@@ -45,7 +45,8 @@ class SetupController
         );
 
         $response->getBody()->write(json_encode($route, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
-        return $response->withStatus(StatusCodeInterface::STATUS_OK);
+        return $response->withStatus(StatusCodeInterface::STATUS_OK)
+            ->withHeader('Content-Type', 'application/json');
     }
 
     /**
@@ -68,7 +69,8 @@ class SetupController
             expectedBody TEXT,
             expectedHeaders TEXT,
             response TEXT,
-            responseCode INTEGER
+            responseCode INTEGER,
+            responseHeaders TEXT
         );');
 
         // Create 'api_call_trace' table
@@ -83,6 +85,7 @@ class SetupController
         )');
 
         $response->getBody()->write(json_encode(['Reset success'], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
-        return $response->withStatus(StatusCodeInterface::STATUS_OK);
+        return $response->withStatus(StatusCodeInterface::STATUS_OK)
+            ->withHeader('Content-Type', 'application/json');
     }
 }

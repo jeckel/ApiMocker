@@ -8,14 +8,17 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use DateTimeInterface;
+use JsonSerializable;
 
 /**
  * Class ApiCallTrace
  * @package App\Entity
  */
-class ApiCallTrace
+class ApiCallTrace implements JsonSerializable
 {
-    /** @var int|null */
+    /**
+     * @var int|null
+     */
     protected $api_call_trace_id;
 
     /** @var int|null */
@@ -139,5 +142,15 @@ class ApiCallTrace
     {
         $this->received_at = $received_at;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        $toReturn = get_object_vars($this);
+        $toReturn['received_at'] = $this->received_at->format('Y-m-d H:i:s');
+        return $toReturn;
     }
 }

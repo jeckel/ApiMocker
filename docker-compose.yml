@@ -8,3 +8,7 @@ services:
     volumes:
       - ./:/app/project
     working_dir: /app/project
+    ports:
+      - "8080:8080"
+    environment:
+      docker: "true"

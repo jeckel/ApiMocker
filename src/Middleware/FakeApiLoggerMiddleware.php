@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class FakeApiLoggerMiddleware
@@ -26,14 +27,20 @@ class FakeApiLoggerMiddleware implements MiddlewareInterface
      * @var ApiCallTraceRepository
      */
     protected $repository;
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * FakeApiLoggerMiddleware constructor.
      * @param ApiCallTraceRepository $repository
+     * @param LoggerInterface        $logger
      */
-    public function __construct(ApiCallTraceRepository $repository)
+    public function __construct(ApiCallTraceRepository $repository, LoggerInterface $logger)
     {
         $this->repository = $repository;
+        $this->logger = $logger;
     }
 
     /**

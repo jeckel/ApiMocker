@@ -12,13 +12,18 @@ use App\Repository\ApiCallTraceRepository;
 use App\Repository\FakeRouteRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class FakeApiController
  * @package App\Controller
  */
-class FakeApiController
+class FakeApiController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var FakeRouteRepository
      */
@@ -32,13 +37,16 @@ class FakeApiController
      * FakeApiController constructor.
      * @param FakeRouteRepository    $routeRepository
      * @param ApiCallTraceRepository $traceRepository
+     * @param LoggerInterface        $logger
      */
     public function __construct(
         FakeRouteRepository $routeRepository,
-        ApiCallTraceRepository $traceRepository
+        ApiCallTraceRepository $traceRepository,
+        LoggerInterface $logger
     ) {
         $this->routeRepository = $routeRepository;
         $this->traceRepository = $traceRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -65,14 +73,23 @@ class FakeApiController
             return $response->withStatus(500, $e->getMessage());
         }
 
+        $this->logger->info(sprintf(
+            'Find matched route #%d : %s (%s)',
+            $route->getId(),
+            $route->getPath(),
+            $route->getMethod()
+        ));
+
         /** @var ApiCallTrace $trace */
         $trace = $request->getAttribute('trace');
         $trace->setMatchedRouteId($route->getId());
         $this->traceRepository->save($trace);
 
-        // @todo: Add response headers
-
         $response->getBody()->write($route->getResponse());
-        return $response->withStatus($route->getResponseCode());
+        $response = $response->withStatus($route->getResponseCode());
+        foreach ($route->getResponseHeaders() as $header => $value) {
+            $response = $response->withAddedHeader($header, $value);
+        }
+        return $response;
     }
 }

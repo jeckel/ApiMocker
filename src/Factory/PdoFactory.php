@@ -25,7 +25,7 @@ class PdoFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container)
     {
         try {
-            $pdo = new PDO($container->get('config')['dsn']);
+            $pdo = new PDO($container->get('settings')['dsn']);
             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             // Possible values ERRMODE_WARNING | ERRMODE_EXCEPTION | ERRMODE_SILENT
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

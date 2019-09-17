@@ -37,6 +37,10 @@ class FakeRoute implements JsonSerializable
     /** @var int */
     protected $responseCode = StatusCodeInterface::STATUS_OK;
 
+    protected $responseHeaders = [
+        'Content-Type' => 'application/json'
+    ];
+
     /**
      * @return int|null
      */
@@ -171,6 +175,35 @@ class FakeRoute implements JsonSerializable
     public function addExpectedHeader(string $header, string $value): FakeRoute
     {
         $this->expectedHeaders[$header] = $value;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResponseHeaders(): array
+    {
+        return $this->responseHeaders;
+    }
+
+    /**
+     * @param array $responseHeaders
+     * @return FakeRoute
+     */
+    public function setResponseHeaders(array $responseHeaders): FakeRoute
+    {
+        $this->responseHeaders = $responseHeaders;
+        return $this;
+    }
+
+    /**
+     * @param string $header
+     * @param string $value
+     * @return FakeRoute
+     */
+    public function addResponseHeader(string $header, string $value): FakeRoute
+    {
+        $this->responseHeaders[$header] = $value;
         return $this;
     }
 
