@@ -4,7 +4,7 @@ COPY . /app
 WORKDIR /app
 RUN composer install --no-dev
 
-FROM php:7.2-cli-alpine
+FROM php:7.3-cli-alpine
 
 ENV CONFIG_FILE='/app/config/config.php'
 ENV LOG_FILE='/app/config/log.php'
