@@ -5,6 +5,7 @@ declare(strict_types=1);
  * Created at : 26/07/2019
  */
 
+use App\Controller\SetupController;
 use App\Factory\RouterFactory;
 use DI\Bridge\Slim\Bridge;
 use DI\Container;
@@ -13,6 +14,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use App\Service\Router;
+use Slim\App;
 use function DI\factory;
 
 if (! defined('PROJECT_ROOT')) {
@@ -26,12 +28,12 @@ $app = Bridge::create(
         ->addDefinitions(PROJECT_ROOT . '/settings/container.php')
         ->build()
     );
+$app->addBodyParsingMiddleware();
 
 // Configuration API
-$app->get('fake-api-config', static function(RequestInterface $request, ResponseInterface $response, array $args) {
-    $payload = json_encode(['hello' => 'world'], JSON_PRETTY_PRINT);
-    $response->getBody()->write($payload);
-    return $response->withHeader('Content-Type', 'application/json');
+$app->group('/fake-api-config', static function ($app) {
+    $app->post('/routeMock', [SetupController::class, 'addRouteMock']);
+    $app->delete('/reset', [SetupController::class, 'reset']);
 });
 
 // Matching routes
