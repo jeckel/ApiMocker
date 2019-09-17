@@ -16,7 +16,7 @@ if (! defined('PROJECT_ROOT')) {
 
 return [
     'config' => [
-        'dsn' => 'sqlite:'. (getenv('SQLITE_ROOT') || PROJECT_ROOT . '/data/database/database.sqlite'),
+        'dsn' => 'sqlite:'. (getenv('SQLITE_ROOT') ?: PROJECT_ROOT . '/data/database/database.sqlite'),
         'routes' => include getenv('CONFIG_FILE'),
     ],
     Router::class => factory(RouterFactory::class),
