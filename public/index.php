@@ -7,16 +7,10 @@ declare(strict_types=1);
 
 use App\Controller\FakeApiController;
 use App\Controller\SetupController;
-use App\Factory\RouterFactory;
+use App\Middleware\FakeApiLoggerMiddleware;
 use DI\Bridge\Slim\Bridge;
-use DI\Container;
 use DI\ContainerBuilder;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
-use App\Service\Router;
-use Slim\App;
-use function DI\factory;
+use Slim\Routing\RouteCollectorProxy;
 
 if (! defined('PROJECT_ROOT')) {
     define('PROJECT_ROOT', dirname(__DIR__));
@@ -24,23 +18,21 @@ if (! defined('PROJECT_ROOT')) {
 
 require_once '../vendor/autoload.php';
 
-$app = Bridge::create(
-    (new ContainerBuilder())
-        ->addDefinitions(PROJECT_ROOT . '/settings/container.php')
-        ->build()
-    );
+$container = (new ContainerBuilder())
+    ->addDefinitions(PROJECT_ROOT . '/settings/container.php')
+    ->build();
+
+$app = Bridge::create($container);
 $app->addBodyParsingMiddleware();
 
 // Configuration API
-$app->group('/fake-api-config', static function ($app) {
-    $app->post('/routeMock', [SetupController::class, 'addRouteMock']);
-    $app->delete('/reset', [SetupController::class, 'reset']);
+$app->group('/fake-api-config', static function (RouteCollectorProxy $group) {
+    $group->post('/routeMock', [SetupController::class, 'addRouteMock']);
+    $group->delete('/reset', [SetupController::class, 'reset']);
 });
 
-// Matching routes
-//$app->any('/[{route:.*}]', static function(RequestInterface $request, ResponseInterface $response, Router $router) {
-//    return $router->dispatch($request, $response);
-//});
-$app->any('/[{route:.*}]', [FakeApiController::class, 'dispatch']);
-
+$app->any('/[{route:.*}]', [FakeApiController::class, 'dispatch'])
+    ->addMiddleware(
+        $container->get(FakeApiLoggerMiddleware::class)
+    );
 $app->run();

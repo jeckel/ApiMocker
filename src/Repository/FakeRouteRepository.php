@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\RouteMock;
+use App\Entity\FakeRoute;
 use App\Exception\RoutingException;
-use App\Mapper\RouteMockMapper;
+use App\Mapper\FakeRouteMapper;
 use PDO;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -17,31 +17,31 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class RouteMockRepository
  * @package App\Repository
  */
-class RouteMockRepository
+class FakeRouteRepository
 {
     /** @var PDO */
     protected $pdo;
     /**
-     * @var RouteMockMapper
+     * @var FakeRouteMapper
      */
     protected $mapper;
 
     /**
      * RouteMockRepository constructor.
      * @param PDO             $pdo
-     * @param RouteMockMapper $mapper
+     * @param FakeRouteMapper $mapper
      */
-    public function __construct(PDO $pdo, RouteMockMapper $mapper)
+    public function __construct(PDO $pdo, FakeRouteMapper $mapper)
     {
         $this->pdo = $pdo;
         $this->mapper = $mapper;
     }
 
     /**
-     * @param RouteMock $route
-     * @return RouteMock
+     * @param FakeRoute $route
+     * @return FakeRoute
      */
-    public function save(RouteMock $route): RouteMock
+    public function save(FakeRoute $route): FakeRoute
     {
         $stmt = $this->pdo->prepare(
             'INSERT INTO route 
@@ -64,9 +64,9 @@ class RouteMockRepository
 
     /**
      * @param ServerRequestInterface $request
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function getByRequest(ServerRequestInterface $request): RouteMock
+    public function getByRequest(ServerRequestInterface $request): FakeRoute
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
@@ -96,6 +96,6 @@ class RouteMockRepository
             ));
         }
 
-        return $this->mapper->mapFromRow(new RouteMock(), $results[0]);
+        return $this->mapper->mapFromRow(new FakeRoute(), $results[0]);
     }
 }

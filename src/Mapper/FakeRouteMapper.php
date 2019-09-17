@@ -7,20 +7,20 @@ declare(strict_types=1);
 
 namespace App\Mapper;
 
-use App\Entity\RouteMock;
+use App\Entity\FakeRoute;
 
 /**
  * Class RouteMockMapper
  * @package App\Mapper
  */
-class RouteMockMapper
+class FakeRouteMapper
 {
     /**
-     * @param RouteMock $route
+     * @param FakeRoute $route
      * @param array     $data
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function mapFromArray(RouteMock $route, array $data): RouteMock
+    public function mapFromArray(FakeRoute $route, array $data): FakeRoute
     {
         if (isset($data['method'])) {
             $route->setMethod($data['method']);
@@ -46,11 +46,11 @@ class RouteMockMapper
     }
 
     /**
-     * @param RouteMock $route
+     * @param FakeRoute $route
      * @param array     $data
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function mapFromRow(RouteMock $route, array $data): RouteMock
+    public function mapFromRow(FakeRoute $route, array $data): FakeRoute
     {
         $route->setId(intval($data['id']))
             ->setMethod($data['method'])

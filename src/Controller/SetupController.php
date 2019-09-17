@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\RouteMock;
-use App\Mapper\RouteMockMapper;
-use App\Repository\RouteMockRepository;
+use App\Entity\FakeRoute;
+use App\Mapper\FakeRouteMapper;
+use App\Repository\FakeRouteRepository;
 use Fig\Http\Message\StatusCodeInterface;
 use PDO;
 use Psr\Http\Message\ResponseInterface;
@@ -26,20 +26,20 @@ class SetupController
      *
      * @param ServerRequestInterface $request
      * @param ResponseInterface      $response
-     * @param RouteMockMapper        $mapper
-     * @param RouteMockRepository    $repo
+     * @param FakeRouteMapper        $mapper
+     * @param FakeRouteRepository    $repo
      * @return ResponseInterface
      */
     public function addRouteMock(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        RouteMockMapper $mapper,
-        RouteMockRepository $repo
+        FakeRouteMapper $mapper,
+        FakeRouteRepository $repo
     ): ResponseInterface {
 
         $route = $repo->save(
             $mapper->mapFromArray(
-                new RouteMock(),
+                new FakeRoute(),
                 $request->getParsedBody()
             )
         );
@@ -59,9 +59,8 @@ class SetupController
         ResponseInterface $response,
         PDO $pdo
     ): ResponseInterface {
+        // Create 'Route' table
         $pdo->exec('DROP TABLE IF EXISTS route');
-
-        // Create 'Route' Table
         $pdo->exec('CREATE TABLE IF NOT EXISTS route ( 
             id      INTEGER PRIMARY KEY AUTOINCREMENT,
             path    VARCHAR(255),
@@ -71,6 +70,17 @@ class SetupController
             response TEXT,
             responseCode INTEGER
         );');
+
+        // Create 'api_call_trace' table
+        $pdo->exec('DROP TABLE IF EXISTS api_call_trace');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS api_call_trace (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            route_id    INTEGER NULL,
+            path        VARCHAR(255),
+            method      VARCHAR(10),
+            body        TEXT,
+            received_at DATETIME                                          
+        )');
 
         $response->getBody()->write(json_encode(['Reset success'], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
         return $response->withStatus(StatusCodeInterface::STATUS_OK);

@@ -14,7 +14,7 @@ use JsonSerializable;
  * Class RouteMock
  * @package App\Entity
  */
-class RouteMock implements JsonSerializable
+class FakeRoute implements JsonSerializable
 {
     /** @var int|null */
     protected $route_id;
@@ -47,9 +47,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param int $route_id
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setId(int $route_id): RouteMock
+    public function setId(int $route_id): FakeRoute
     {
         $this->route_id = $route_id;
         return $this;
@@ -65,9 +65,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param string $method
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setMethod(string $method): RouteMock
+    public function setMethod(string $method): FakeRoute
     {
         $this->method = $method;
         return $this;
@@ -83,9 +83,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param string $path
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setPath(string $path): RouteMock
+    public function setPath(string $path): FakeRoute
     {
         $this->path = $path;
         return $this;
@@ -101,9 +101,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param array|string|null $expectedBody
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setExpectedBody($expectedBody): RouteMock
+    public function setExpectedBody($expectedBody): FakeRoute
     {
         $this->expectedBody = $expectedBody;
         return $this;
@@ -119,9 +119,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param array $expectedHeaders
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setExpectedHeaders(array $expectedHeaders): RouteMock
+    public function setExpectedHeaders(array $expectedHeaders): FakeRoute
     {
         $this->expectedHeaders = $expectedHeaders;
         return $this;
@@ -137,9 +137,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param mixed $response
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setResponse($response): RouteMock
+    public function setResponse($response): FakeRoute
     {
         $this->response = $response;
         return $this;
@@ -155,9 +155,9 @@ class RouteMock implements JsonSerializable
 
     /**
      * @param int $responseCode
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function setResponseCode(int $responseCode): RouteMock
+    public function setResponseCode(int $responseCode): FakeRoute
     {
         $this->responseCode = $responseCode;
         return $this;
@@ -166,9 +166,9 @@ class RouteMock implements JsonSerializable
     /**
      * @param string $header
      * @param string $value
-     * @return RouteMock
+     * @return FakeRoute
      */
-    public function addExpectedHeader(string $header, string $value): RouteMock
+    public function addExpectedHeader(string $header, string $value): FakeRoute
     {
         $this->expectedHeaders[$header] = $value;
         return $this;
