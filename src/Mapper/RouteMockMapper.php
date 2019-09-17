@@ -44,4 +44,21 @@ class RouteMockMapper
         }
         return $route;
     }
+
+    /**
+     * @param RouteMock $route
+     * @param array     $data
+     * @return RouteMock
+     */
+    public function mapFromRow(RouteMock $route, array $data): RouteMock
+    {
+        $route->setId(intval($data['id']))
+            ->setMethod($data['method'])
+            ->setPath($data['path'])
+            ->setExpectedBody(json_decode($data['expectedBody']))
+            ->setExpectedHeaders(json_decode($data['expectedHeaders'], true))
+            ->setResponse(json_decode($data['response']))
+            ->setResponseCode(intval($data['responseCode']));
+        return $route;
+    }
 }

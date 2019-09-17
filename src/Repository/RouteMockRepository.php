@@ -8,7 +8,10 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\RouteMock;
+use App\Exception\RoutingException;
+use App\Mapper\RouteMockMapper;
 use PDO;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class RouteMockRepository
@@ -18,14 +21,20 @@ class RouteMockRepository
 {
     /** @var PDO */
     protected $pdo;
+    /**
+     * @var RouteMockMapper
+     */
+    protected $mapper;
 
     /**
      * RouteMockRepository constructor.
-     * @param PDO $pdo
+     * @param PDO             $pdo
+     * @param RouteMockMapper $mapper
      */
-    public function __construct(PDO $pdo)
+    public function __construct(PDO $pdo, RouteMockMapper $mapper)
     {
         $this->pdo = $pdo;
+        $this->mapper = $mapper;
     }
 
     /**
@@ -51,5 +60,42 @@ class RouteMockRepository
 
         $route->setId(intval($this->pdo->lastInsertId()));
         return $route;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return RouteMock
+     */
+    public function getByRequest(ServerRequestInterface $request): RouteMock
+    {
+        $method = $request->getMethod();
+        $path = $request->getUri()->getPath();
+
+        $stmt = $this->pdo->prepare('SELECT * FROM route WHERE path = :path AND method = :method');
+        $stmt->execute([
+            ':path' => $path,
+            ':method' => $method
+        ]);
+
+        $results = $stmt->fetchAll();
+        $matches = count($results);
+
+        if ($matches === 0) {
+            throw new RoutingException(sprintf(
+                'No matching route found for %s with method %s',
+                $path,
+                $method
+            ));
+        }
+
+        if ($matches > 1) {
+            throw new RoutingException(sprintf(
+                'Multiple route definition found for %s with method %s',
+                $path,
+                $method
+            ));
+        }
+
+        return $this->mapper->mapFromRow(new RouteMock(), $results[0]);
     }
 }

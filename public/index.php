@@ -5,6 +5,7 @@ declare(strict_types=1);
  * Created at : 26/07/2019
  */
 
+use App\Controller\FakeApiController;
 use App\Controller\SetupController;
 use App\Factory\RouterFactory;
 use DI\Bridge\Slim\Bridge;
@@ -37,8 +38,9 @@ $app->group('/fake-api-config', static function ($app) {
 });
 
 // Matching routes
-$app->any('/[{route:.*}]', static function(RequestInterface $request, ResponseInterface $response, Router $router) {
-    return $router->dispatch($request, $response);
-});
+//$app->any('/[{route:.*}]', static function(RequestInterface $request, ResponseInterface $response, Router $router) {
+//    return $router->dispatch($request, $response);
+//});
+$app->any('/[{route:.*}]', [FakeApiController::class, 'dispatch']);
 
 $app->run();
