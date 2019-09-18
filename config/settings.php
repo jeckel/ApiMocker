@@ -12,12 +12,7 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         'settings' => [
             'displayErrorDetails' => true, // Should be set to false in production
-            'logger' => [
-                'name' => 'slim-app',
-                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../var/logs/app.log',
-                'level' => Logger::DEBUG,
-            ],
-            'dsn' => 'sqlite:'. (getenv('SQLITE_ROOT') ?:  __DIR__  . '/../var/database/database.sqlite')
+            'dsn' => 'sqlite:'. (getenv('SQLITE_ROOT') ?:  __DIR__  . '/../var/database/database.sqlite'),
         ],
     ]);
 };

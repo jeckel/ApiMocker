@@ -3,7 +3,7 @@
 DOCKER=docker-compose run --rm --no-deps php-cli
 
 build:
-	@docker build -t jeckel/php-fake-json-server .
+	@docker build -t jeckel/php-fake-json-server:1.0 .
 
 up:
 	@docker run --rm -v $(shell pwd):/app -p 8080:8080 -e docker=true jeckel/php-fake-json-server

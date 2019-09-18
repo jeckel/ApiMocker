@@ -43,6 +43,18 @@ class FakeRouteRepository
      */
     public function save(FakeRoute $route): FakeRoute
     {
+        if ($route->getId() === null) {
+            return $this->insert($route);
+        }
+        return $this->update($route);
+    }
+
+    /**
+     * @param FakeRoute $route
+     * @return FakeRoute
+     */
+    public function insert(FakeRoute $route): FakeRoute
+    {
         $stmt = $this->pdo->prepare(
             'INSERT INTO route 
             (path, method, expectedBody, expectedHeaders, response, responseCode, responseHeaders) 
@@ -60,6 +72,36 @@ class FakeRouteRepository
         ]);
 
         $route->setId(intval($this->pdo->lastInsertId()));
+        return $route;
+    }
+
+    /**
+     * @param FakeRoute $route
+     * @return FakeRoute
+     */
+    public function update(FakeRoute $route): FakeRoute
+    {
+        $stmt = $this->pdo->prepare('UPDATE route SET
+                path = :path,
+                method = :method,
+                expectedBody = :expectedBody,
+                expectedHeaders = :expectedHeaders,
+                response = :response,
+                responseCode = :responseCode,
+                responseHeaders = :responseHeaders
+            WHERE id = :id');
+
+        $stmt->execute([
+            ':id' => $route->getId(),
+            ':path' => $route->getPath(),
+            ':method' => $route->getMethod(),
+            ':expectedBody' => json_encode($route->getExpectedBody(), JSON_THROW_ON_ERROR),
+            ':expectedHeaders' => json_encode($route->getExpectedHeaders(), JSON_THROW_ON_ERROR),
+            ':response' => json_encode($route->getResponse(), JSON_THROW_ON_ERROR),
+            ':responseCode' => $route->getResponseCode(),
+            ':responseHeaders' => json_encode($route->getResponseHeaders(), JSON_THROW_ON_ERROR)
+        ]);
+
         return $route;
     }
 

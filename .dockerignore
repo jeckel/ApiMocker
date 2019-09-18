@@ -1,9 +1,6 @@
 # IDE Specifics
 /.idea
 
-# Temporary files
-/config/*.php
-
 # Builder and compiling files
 .*
 Dockerfile

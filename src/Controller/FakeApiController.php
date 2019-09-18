@@ -12,17 +12,13 @@ use App\Repository\ApiCallTraceRepository;
 use App\Repository\FakeRouteRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class FakeApiController
  * @package App\Controller
  */
-class FakeApiController implements LoggerAwareInterface
+class FakeApiController
 {
-    use LoggerAwareTrait;
 
     /**
      * @var FakeRouteRepository
@@ -37,16 +33,13 @@ class FakeApiController implements LoggerAwareInterface
      * FakeApiController constructor.
      * @param FakeRouteRepository    $routeRepository
      * @param ApiCallTraceRepository $traceRepository
-     * @param LoggerInterface        $logger
      */
     public function __construct(
         FakeRouteRepository $routeRepository,
-        ApiCallTraceRepository $traceRepository,
-        LoggerInterface $logger
+        ApiCallTraceRepository $traceRepository
     ) {
         $this->routeRepository = $routeRepository;
         $this->traceRepository = $traceRepository;
-        $this->logger = $logger;
     }
 
     /**
@@ -58,7 +51,6 @@ class FakeApiController implements LoggerAwareInterface
         ServerRequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-
 
         try {
             $route = $this->routeRepository->getByRequest($request);
@@ -72,13 +64,6 @@ class FakeApiController implements LoggerAwareInterface
             ));
             return $response->withStatus(500, $e->getMessage());
         }
-
-        $this->logger->info(sprintf(
-            'Find matched route #%d : %s (%s)',
-            $route->getId(),
-            $route->getPath(),
-            $route->getMethod()
-        ));
 
         /** @var ApiCallTrace $trace */
         $trace = $request->getAttribute('trace');

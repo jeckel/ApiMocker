@@ -22,6 +22,9 @@ class FakeRouteMapper
      */
     public function mapFromArray(FakeRoute $route, array $data): FakeRoute
     {
+        if (isset($data['route_id'])) {
+            $route->setId(intval($data['route_id']));
+        }
         if (isset($data['method'])) {
             $route->setMethod($data['method']);
         }
