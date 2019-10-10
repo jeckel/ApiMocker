@@ -4,9 +4,10 @@ version: '3.5'
 #
 services:
   api-mocker:
-    build:
-      dockerfile: Dockerfile
-      context: .
+    image: jeckel/php-test:7.3-cli-alpine
+#    build:
+#      dockerfile: Dockerfile
+#      context: .
     volumes:
       - ./:/app/project
     working_dir: /app/project
