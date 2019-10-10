@@ -62,7 +62,8 @@ class FakeApiController
                 ],
                 JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR
             ));
-            return $response->withStatus(500, $e->getMessage());
+            return $response->withStatus(500, $e->getMessage())
+                ->withHeader('Content-Type', 'application/json');
         }
 
         /** @var ApiCallTrace $trace */
