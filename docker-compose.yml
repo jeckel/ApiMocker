@@ -3,8 +3,10 @@ version: '3.5'
 # Define services
 #
 services:
-  php-cli:
-    image: jeckel/php-test:7.3-cli-alpine
+  api-mocker:
+    build:
+      dockerfile: Dockerfile
+      context: .
     volumes:
       - ./:/app/project
     working_dir: /app/project
@@ -12,3 +14,9 @@ services:
       - "8080:8080"
     environment:
       docker: "true"
+
+  newman:
+    image: postman/newman
+    volumes:
+      - ./postman_collections:/etc/newman
+    command: "run Test_Get_mock.postman_collection.json -e Docker.postman_environment.json"
