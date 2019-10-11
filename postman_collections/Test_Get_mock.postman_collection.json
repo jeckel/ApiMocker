@@ -1,0 +1,343 @@
+{
+	"info": {
+		"_postman_id": "4fd9273a-0a5f-47c8-96ed-cdbac2399a12",
+		"name": "Test Get mock",
+		"description": "Reset ApiMocker, configure a GET route, and test this route with valid request. Validate logs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Reset config",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c314b560-7983-4dd7-b6ff-b047bfff6b3f",
+						"exec": [
+							"pm.test(\"Response is '200 OK'\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is 'application/json'\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"pm.test(\"Body is 'Reset success'\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.eql([\"Reset success\"]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "77af31d7-ee7f-4b9c-8e24-5af216f3a39f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{hostname}}:{{port}}/fake-api-config/reset",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"fake-api-config",
+						"reset"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Setup mock GET /api/v1/fake",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c7737aff-2de4-44e3-a691-fa8efe313adb",
+						"exec": [
+							"pm.test(\"Response is '200 OK'\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is 'application/json'\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"pm.test(\"Body contain mock record\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.eql({",
+							"        \"route_id\": 1,",
+							"        \"method\": \"GET\",",
+							"        \"path\": \"/api/v1/fake\",",
+							"        \"expectedBody\": null,",
+							"        \"expectedHeaders\": {",
+							"            \"Content-Type\": \"application/json\"",
+							"        },",
+							"        \"response\": \"{\\\"foo\\\":\\\"bar\\\"}\",",
+							"        \"responseCode\": 200,",
+							"        \"responseHeaders\": {",
+							"            \"Content-Type\": \"application/json\"",
+							"        }",
+							"    });",
+							"    ",
+							"    ",
+							"    pm.environment.set(\"route_id\", jsonData.route_id);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"path\": \"/api/v1/fake\",\n    \"method\": \"GET\",\n    \"expectedHeaders\": {\n    \t\"Content-Type\": \"application/json\"\t\n    },\n    \"response\": \"{\\\"foo\\\":\\\"bar\\\"}\"\n}"
+				},
+				"url": {
+					"raw": "{{hostname}}:{{port}}/fake-api-config/routeMock",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"fake-api-config",
+						"routeMock"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test setuped mock with valid data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "74896bab-8d96-4d59-b912-4dbd78f95b33",
+						"exec": [
+							"pm.test(\"Response is '200 OK'\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is 'application/json'\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"pm.test(\"Body is configured body\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.eql({",
+							"        \"foo\": \"bar\"",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{hostname}}:{{port}}/api/v1/fake",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"fake"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test with unexpected route",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "80fd9c5e-1636-4057-875f-7c285afdbd99",
+						"exec": [
+							"pm.test(\"Response is '500 Internal Error'\", function () {",
+							"    pm.response.to.have.status(500);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is 'application/json'\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"pm.test(\"Body is expected error message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.eql({",
+							"        \"error_code\": 500,",
+							"        \"error_message\": \"No matching route found for \\/api\\/v1\\/foo with method GET\"",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"foo\":\"barbaz\"}"
+				},
+				"url": {
+					"raw": "{{hostname}}:{{port}}/api/v1/foo",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"foo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check logs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "21693110-8f98-4c87-8cb2-b5f27701ba47",
+						"exec": [
+							"pm.test(\"Response is '200 OK'\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is 'application/json'\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"pm.test(\"Body contain the log of previous success call\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData.count()).to.eql(1);",
+							"    ",
+							"    var callData = jsonData[0];",
+							"    pm.expect(callData.api_call_trace_id).to.eql(\"1\");",
+							"    pm.expect(Number(callData.matched_route_id)).to.eql(pm.environment.get(\"route_id\"));    ",
+							"    pm.expect(callData.path).to.eql('/api/v1/fake');",
+							"    pm.expect(callData.method).to.eql('GET');",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{hostname}}:{{port}}/fake-api-config/trace",
+					"host": [
+						"{{hostname}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"fake-api-config",
+						"trace"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

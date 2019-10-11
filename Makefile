@@ -1,12 +1,13 @@
 .PHONY: build up composer phpstan phpcs phpcbf phpmd phpunit test qa grumphp install-gumphp
 
-DOCKER=docker-compose run --rm --no-deps php-cli
+DOCKER=docker-compose run --rm --no-deps api-mocker
 
 build:
-	@docker build -t jeckel/php-fake-json-server .
+	@docker build -t jeckel/api-mocker .
 
 up:
-	@docker run --rm -v $(shell pwd):/app -p 8080:8080 jeckel/php-fake-json-server
+	docker-compose up api-mocker
+	#@docker run --rm -v $(shell pwd):/app -p 8080:8080 -e docker=true jeckel/api-mocker
 
 composer:
 	@${DOCKER} composer ${CMD}
@@ -34,3 +35,6 @@ grumphp:
 
 install-gumphp:
 	@${DOCKER} vendor/bin/grumphp git:init
+
+newman:
+	docker-compose up --remove-orphans newman

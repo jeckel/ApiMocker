@@ -3,7 +3,7 @@ parameters:
   hooks_dir: ~
   hooks_preset: local
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: 'docker-compose run --rm --no-deps php-cli'
+    EXEC_GRUMPHP_COMMAND: 'docker-compose run --rm --no-deps api-mocker'
   stop_on_failure: false
   ignore_unstaged_changes: false
   hide_circumvention_tip: false
