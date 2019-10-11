@@ -4,10 +4,10 @@ version: '3.5'
 #
 services:
   api-mocker:
-    image: jeckel/php-test:7.3-cli-alpine
-#    build:
-#      dockerfile: Dockerfile
-#      context: .
+#    image: jeckel/php-test:7.3-cli-alpine
+    build:
+      dockerfile: Dockerfile
+      context: .
     volumes:
       - ./:/app/project
     working_dir: /app/project
@@ -15,6 +15,16 @@ services:
       - "8080:8080"
     environment:
       docker: "true"
+#      PORT: "8080"
+#    command: ./launcher.sh
+
+  php-cli:
+    image: jeckel/php-test:7.3-cli-alpine
+    volumes:
+      - ./:/app/project
+    working_dir: /app/project
+    ports:
+      - "8080:8080"
 
   newman:
     image: postman/newman
