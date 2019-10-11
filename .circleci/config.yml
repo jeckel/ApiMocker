@@ -1,8 +1,8 @@
-# PHP CircleCI 2.0 configuration file
+# PHP CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-php/ for more details
+# Check https://circleci.com/docs/2.1/language-php/ for more details
 #
-version: 2
+version: 2.1
 
 # Define reusable commands
 commands:
@@ -12,7 +12,7 @@ commands:
     description: "Setting up machine"
     steps:
       - attach_workspace:
-          at: /app
+          at: /home/circleci
       - run:
           name: Install Docker Compose
           command: |
@@ -26,8 +26,8 @@ commands:
 executors:
   platform_exec: # declares a reusable executor
     machine:
-      docker_layer_caching: true
-    working_directory: /app/project
+      docker_layer_caching: false
+    working_directory: /home/circleci/project
 
 jobs:
   build:
@@ -64,17 +64,16 @@ jobs:
     executor: platform_exec
     steps:
       - setup_machine
-    working_directory: /app/project
-    steps:
-      - attach_workspace:
-          at: /app
       - run:
           name: Start API
-          command: docker-compose up -d api-mocker
+          command: |
+            docker-compose up -d api-mocker
+            sleep 10
 
       - run:
           name: Test API
-          command: docker-compose up newman
+          command: |
+            docker-compose run --rm newman
 
 # Define the workflow:
 workflows:
