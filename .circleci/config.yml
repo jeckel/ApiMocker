@@ -3,12 +3,39 @@
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
 version: 2
+
+# Define reusable commands
+commands:
+
+  # Setup reusable machine executor setup
+  setup_machine:
+    description: "Setting up machine"
+    steps:
+      - attach_workspace:
+          at: /app
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+            docker-compose pull
+            docker-compose build
+
+# Define reusable executors
+executors:
+  platform_exec: # declares a reusable executor
+    machine:
+      docker_layer_caching: true
+    working_directory: /app/project
+
 jobs:
   build:
     docker:
       # Specify the version you desire here
       - image: jeckel/php-test:7.3-cli-alpine
 
+    working_directory: /app/project
     steps:
       - checkout
 
@@ -28,3 +55,35 @@ jobs:
             - ./vendor
 
       - run: ./vendor/bin/grumphp run
+
+      - persist_to_workspace:
+          root: /app
+          paths: project
+
+  newman:
+    executor: platform_exec
+    steps:
+      - setup_machine
+    working_directory: /app/project
+    steps:
+      - attach_workspace:
+          at: /app
+      - run:
+          name: Start API
+          command: docker-compose up -d api-mocker
+
+      - run:
+          name: Test API
+          command: docker-compose up newman
+
+# Define the workflow:
+workflows:
+  version: 2
+  # Always run code-quality
+  build:
+    jobs:
+      # Always run:
+      - build
+      - newman:
+          requires:
+            - build
